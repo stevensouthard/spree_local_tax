@@ -10,5 +10,3 @@ group :test do
   gem 'debugger'
 end
 
-gem 'spree_advanced_reporting', :git => 'https://github.com/greinacker/spree_advanced_reporting.git'
-

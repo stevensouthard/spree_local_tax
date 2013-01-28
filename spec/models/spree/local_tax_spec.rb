@@ -69,7 +69,7 @@ describe Spree::LocalTax do
       tax_calculator.compute(order).to_f.should == 0.66 #tax_amount.to_f #0.66
     end
 
-    it "should calculate the taxable amount as item total - promotions + shipping" do
+    it "should calculate the taxable amount only on item total" do
       calculator = tax_calculator
       order.item_total.to_f.should_not == 0.0
 
@@ -79,23 +79,25 @@ describe Spree::LocalTax do
       # shipping
       order.shipping_method = FactoryGirl.create :shipping_method
       order.create_shipment!
+      sa=order.adjustments.shipping.first
+      sa.amount=BigDecimal("25.99")
+      sa.save
       order.adjustments.shipping.count.should == 1
       order.adjustments.count.should == 1
-      calculator.taxable_amount(order).to_f.should == (order.item_total + order.ship_total).to_f
+      calculator.taxable_amount(order).to_f.should == order.item_total
 
       # added cost.
       order.adjustments.create!({ :label => I18n.t(:promotion), :amount => 20.0 })
       order.adjustments.count.should == 2
       order.save!
-      amt = order.item_total + 20.0
-      calculator.taxable_amount(order).to_f.should == amt
+      amt = order.item_total #not 30.
+      calculator.taxable_amount(order).to_f.should == order.item_total  # not 30
 
       # credit
       order.adjustments.create!({ :label => 'another adjustment', :amount => -10.0 })
       order.save!
-      amt -= 10.0
       order.adjustments.count.should == 3 # shipping + promotion + other
-      calculator.taxable_amount(order).to_f.should == amt
+      calculator.taxable_amount(order).to_f.should == order.item_total # still 10. 
     end
   end
 

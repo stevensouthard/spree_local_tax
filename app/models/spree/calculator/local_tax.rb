@@ -9,7 +9,6 @@ module Spree
     def find_local_tax(address)
       # calculate the tax rate based on order shipping location
       # the rate will be calculated:
-      #     1) by querying the spree_local_taxes DB for a county + state match
       #     1) by querying the spree_local_taxes DB for a zip match
       #     2) by falling back to the rate.amount
 
@@ -23,25 +22,25 @@ module Spree
 
       # NOTE the zip code match is only based on the first five digits
 
-      Spree::LocalTax.find_by_city_and_state_id(address.city.upcase, address.state.id) ||
+      #Spree::LocalTax.find_by_city_and_state_id(address.city.upcase, address.state.id) ||
       Spree::LocalTax.find_by_zip(address.zipcode[0,5])
     end
 
+    # taxable amount based on line items only like DefaultTax
     def taxable_amount(order)
-      # item total + shipping - promotions
-      adjustment_totals = order.adjustment_total # +shipping - credits - promotions...
 
       line_items_total = order.line_items.select do |line_item|
         line_item.product.tax_category == rate.tax_category
       end.sum(&:total)
 
-      line_items_total + adjustment_totals.to_f
+      line_items_total
     end
 
     private
 
       def compute_order(order)
-        local_tax = find_local_tax(order.ship_address)
+        tax_address = Spree::Config[:tax_using_ship_address] ? order.ship_address :  order.bill_address
+        local_tax = find_local_tax(tax_address)
         tax_rate = local_tax.present? ? local_tax.rate : rate.amount
 
         # TODO the only issue here is that the label text for the adjustment is not calculated
