@@ -7,7 +7,7 @@ module Spree
     end
 
     def find_local_tax(address)
-      # calculate the tax rate based on order billing location
+      # calculate the tax rate based on order shipping location
       # the rate will be calculated:
       #     1) by querying the spree_local_taxes DB for a county + state match
       #     1) by querying the spree_local_taxes DB for a zip match
@@ -29,25 +29,19 @@ module Spree
 
     def taxable_amount(order)
       # item total + shipping - promotions
-      
-      possible_adjustments = order.adjustments.eligible
-
-      adjustment_totals = (
-        possible_adjustments.shipping +
-        possible_adjustments.promotion
-      ).map(&:amount).sum
+      adjustment_totals = order.adjustment_total # +shipping - credits - promotions...
 
       line_items_total = order.line_items.select do |line_item|
         line_item.product.tax_category == rate.tax_category
       end.sum(&:total)
 
-      line_items_total + adjustment_totals
+      line_items_total + adjustment_totals.to_f
     end
 
     private
 
       def compute_order(order)
-        local_tax = find_local_tax(order.bill_address)
+        local_tax = find_local_tax(order.ship_address)
         tax_rate = local_tax.present? ? local_tax.rate : rate.amount
 
         # TODO the only issue here is that the label text for the adjustment is not calculated

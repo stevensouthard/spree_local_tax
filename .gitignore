@@ -8,5 +8,4 @@ tmp
 nbproject
 *.swp
 spec/dummy
-Gemfile.lock
 Guardfile

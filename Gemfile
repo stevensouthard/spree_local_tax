@@ -7,10 +7,8 @@ group :test do
     gem 'rb-fsevent'
     gem 'growl'
   end
+  gem 'debugger'
 end
 
-# specific to my dev setup
-gem 'ruport', :git => 'https://github.com/iloveitaly/ruport.git', :branch => 'wicked-pdf'
-gem 'spree_advanced_reporting', :git => 'https://github.com/iloveitaly/spree_advanced_reporting.git'
+gem 'spree_advanced_reporting', :git => 'https://github.com/greinacker/spree_advanced_reporting.git'
 
-gem 'spree', '~> 1.1.3'

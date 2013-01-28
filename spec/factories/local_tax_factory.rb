@@ -1,8 +1,8 @@
 FactoryGirl.define do
   factory :local_tax, :class => Spree::LocalTax do
-    local 0.05
-    other 0.005
-    city 'Test'
+    local 0.06
+    other 0.006
+    city 'TEST'
     state  { |address| address.association(:state) }
   end
 
