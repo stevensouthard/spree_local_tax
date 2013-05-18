@@ -1,11 +1,12 @@
 module Spree
-  class Calculator::ZipTax < Calculator::LocalTax
+  class Calculator::ZipcodeTax < Calculator::LocalTax
+    require 'zip_tax'
     def self.description
       I18n.t(:zip_tax)
     end
 
     def find_local_tax(address)
-      ::ZipTax.rate(address.zipcode[0,5])
+      ZipTax.rate(address.zipcode[0,5])
     end
 
     private
