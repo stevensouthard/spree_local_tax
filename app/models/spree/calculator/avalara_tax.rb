@@ -20,10 +20,14 @@ module Spree
     end
 
     def compute(order)
-      invoice = SpreeLocalTax::Avalara.generate(order)
+      invoice = avalara.generate(order)
 
-      SpreeLocalTax::Avalara.compute(invoice)
+      avalara.compute(invoice)
+    end
+
+  private
+    def avalara
+      SpreeLocalTax::Avalara
     end
   end
-
 end
