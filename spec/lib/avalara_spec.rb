@@ -66,6 +66,8 @@ describe SpreeLocalTax::Avalara do
 
   context "#compute" do
     let(:invoice) { stub(:invoice) }
+    let(:line)     { stub(:line, tax: '4.99') }
+    let(:response) { stub(:response, tax_lines: [line, line])}
 
     before do
       SpreeLocalTax::Config.set avalara_username: 'acme', avalara_password: 'secret', avalara_endpoint: 'http://domain.tld'
@@ -73,11 +75,11 @@ describe SpreeLocalTax::Avalara do
       ::Avalara.should_receive(:username=).with('acme')
       ::Avalara.should_receive(:password=).with('secret')
       ::Avalara.should_receive(:endpoint=).with('http://domain.tld')
-      ::Avalara.should_receive(:get_tax).with(invoice).and_return(:amount)
+      ::Avalara.should_receive(:get_tax).with(invoice).and_return(response)
     end
 
     subject { SpreeLocalTax::Avalara.compute(invoice) }
 
-    specify { should == :amount }
+    specify { should == 9.98 }
   end
 end
