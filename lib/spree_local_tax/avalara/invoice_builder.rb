@@ -2,6 +2,7 @@ module SpreeLocalTax::Avalara
   class InvoiceBuilder
     def initialize
       @invoice = ::Avalara::Request::Invoice.new
+      @lines   = []
     end
 
     def customer=(value)
@@ -16,8 +17,19 @@ module SpreeLocalTax::Avalara
       @origin = address('ORIGIN', line1, line2, city, region, country, postal_code)
     end
 
+    def add_line(item_code, description, quantity, amount)
+      @lines << ::Avalara::Request::Line.new(line_no: @lines.count+1,
+                                             destination_code: 'DESTINATION',
+                                             origin_code:      'ORIGIN',
+                                             item_code:        item_code,
+                                             description:      description,
+                                             qty:              quantity,
+                                             amount:           amount)
+    end
+
     def invoice
       @invoice.addresses = [@destination, @origin]
+      @invoice.lines     = @lines
       @invoice
     end
 
