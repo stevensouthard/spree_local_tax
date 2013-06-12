@@ -48,6 +48,11 @@ describe SpreeLocalTax::Avalara do
     let(:invoice) { stub(:invoice) }
 
     before do
+      SpreeLocalTax::Config.set avalara_username: 'acme', avalara_password: 'secret', avalara_endpoint: 'http://domain.tld'
+
+      ::Avalara.should_receive(:username=).with('acme')
+      ::Avalara.should_receive(:password=).with('secret')
+      ::Avalara.should_receive(:endpoint=).with('http://domain.tld')
       ::Avalara.should_receive(:get_tax).with(invoice).and_return(:amount)
     end
 

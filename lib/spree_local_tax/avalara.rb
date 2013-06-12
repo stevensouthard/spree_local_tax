@@ -18,6 +18,9 @@ module SpreeLocalTax::Avalara
   end
 
   def compute(invoice)
+    ::Avalara.username = SpreeLocalTax::Config.avalara_username
+    ::Avalara.password = SpreeLocalTax::Config.avalara_password
+    ::Avalara.endpoint = SpreeLocalTax::Config.avalara_endpoint
     ::Avalara.get_tax(invoice)
   end
 end
