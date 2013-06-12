@@ -13,6 +13,7 @@ describe SpreeLocalTax::Avalara do
         builder.should_receive(:invoice).and_return(:invoice)
         builder.should_not_receive(:customer=)
         builder.should_receive(:add_destination)
+        builder.should_receive(:add_origin)
       end
 
       subject { SpreeLocalTax::Avalara.generate(order) }
@@ -26,15 +27,17 @@ describe SpreeLocalTax::Avalara do
       let(:variant) { stub(:variant, sku: '1234', product: product)}
       let(:line1)   { stub(:line, variant: variant, quantity: 2, total: 9.98) }
       let(:line2)   { stub(:line, variant: variant, quantity: 3, total: 14.97) }
-      let(:order) { stub(:order, email: 'wayne@gretzky.com', line_items: [line1, line2]) }
+      let(:order)   { stub(:order, email: 'wayne@gretzky.com', line_items: [line1, line2]) }
 
       before do
         SpreeLocalTax::Avalara::InvoiceBuilder.should_receive(:new).and_return(builder)
+        SpreeLocalTax::Config.set(origin_address1: '123 Warehouse Dr', origin_address2: '#1010', origin_city: 'Chicago', origin_state: 'IL', origin_country: 'US', origin_zipcode: '12345')
 
         builder.should_receive(:invoice).and_return(:invoice)
         builder.should_receive(:customer=).with('wayne@gretzky.com')
         builder.should_receive(:add_line).with('1234', 'foo', 2, 9.98)
         builder.should_receive(:add_line).with('1234', 'foo', 3, 14.97)
+        builder.should_receive(:add_origin).with('123 Warehouse Dr', '#1010', "Chicago", "IL", "US", "12345")
       end
 
       subject { SpreeLocalTax::Avalara.generate(order) }
