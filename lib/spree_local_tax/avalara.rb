@@ -1,0 +1,2 @@
+module SpreeLocalTax::Avalara
+end
