@@ -9,6 +9,11 @@ module SpreeLocalTax
       g.test_framework :rspec
     end
 
+    initializer "spree.environment.local_tax", before: :load_config_initializers do |app|
+      require 'spree/local_tax/configuration'
+      SpreeLocalTax::Config = SpreeLocalTax::Configuration.new
+    end
+
     initializer 'spree.register.local_tax', :after => "spree.register.calculators" do |app|
        app.config.spree.calculators.tax_rates << Spree::Calculator::LocalTax
        app.config.spree.calculators.tax_rates << Spree::Calculator::ZipTax
