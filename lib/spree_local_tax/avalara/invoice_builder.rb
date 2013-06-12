@@ -1,4 +1,4 @@
 module SpreeLocalTax::Avalara
-  class InvoiceGenerator
+  class InvoiceBuilder
   end
 end
