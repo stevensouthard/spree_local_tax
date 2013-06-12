@@ -17,6 +17,7 @@ Gem::Specification.new do |s|
 
   s.add_dependency 'spree_core', '~> 1.3.0'
   s.add_dependency 'zip_tax'
+  s.add_dependency 'avalara'
 #  s.add_dependency 'ruport'
 #  s.add_dependency 'spree_advanced_reporting'
 
