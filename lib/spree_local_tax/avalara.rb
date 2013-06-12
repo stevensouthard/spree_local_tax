@@ -2,6 +2,8 @@ module SpreeLocalTax::Avalara
   extend self
 
   def generate(order)
-    ::Avalara::Request::Invoice.new(customer_code: order.email || 'guest')
+    generator = InvoiceGenerator.new
+    generator.customer = order.email if order.email.present?
+    generator.invoice
   end
 end
