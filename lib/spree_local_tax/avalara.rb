@@ -8,7 +8,7 @@ module SpreeLocalTax::Avalara
     builder.customer = order.email if order.email.present?
 
     builder.add_destination(address.address1, address.address2, address.city, address.state.try(:abbr) || address.state_name, address.country.iso, address.zipcode)
-    builder.add_origin(tax_config.origin_address1, tax_config.origin_address2, tax_config.origin_city, tax_config.origin_state, tax_config.origin_country, tax_config.origin_zipcode)
+    builder.add_origin(config.origin_address1, config.origin_address2, config.origin_city, config.origin_state, config.origin_country, config.origin_zipcode)
 
     order.line_items.each do |line|
       variant = line.variant
@@ -16,10 +16,6 @@ module SpreeLocalTax::Avalara
     end
 
     builder.invoice
-  end
-
-  def tax_config
-    SpreeLocalTax::Config
   end
 
   def compute(invoice)
@@ -30,5 +26,10 @@ module SpreeLocalTax::Avalara
     response = ::Avalara.get_tax(invoice)
 
     response.tax_lines.inject(0) {|sum, line| sum + line.tax.to_f }
+  end
+
+private
+  def config
+    SpreeLocalTax::Config
   end
 end
