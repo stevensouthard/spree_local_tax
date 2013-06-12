@@ -16,4 +16,8 @@ module SpreeLocalTax::Avalara
 
     builder.invoice
   end
+
+  def compute(invoice)
+    ::Avalara.get_tax(invoice)
+  end
 end

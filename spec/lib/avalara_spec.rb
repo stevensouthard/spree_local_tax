@@ -1,7 +1,7 @@
 require 'spec_helper'
 
 describe SpreeLocalTax::Avalara do
-  context "generate" do
+  context "#generate" do
     let(:builder) { mock(:builder) }
 
     context "guest" do
@@ -44,5 +44,15 @@ describe SpreeLocalTax::Avalara do
     end
   end
 
-  context "calculate"
+  context "#compute" do
+    let(:invoice) { stub(:invoice) }
+
+    before do
+      ::Avalara.should_receive(:get_tax).with(invoice).and_return(:amount)
+    end
+
+    subject { SpreeLocalTax::Avalara.compute(invoice) }
+
+    specify { should == :amount }
+  end
 end
