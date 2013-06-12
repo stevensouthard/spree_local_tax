@@ -26,7 +26,7 @@ describe SpreeLocalTax::Avalara do
       let(:variant) { stub(:variant, sku: '1234', product: product)}
       let(:line1)   { stub(:line, variant: variant, quantity: 2, total: 9.98) }
       let(:line2)   { stub(:line, variant: variant, quantity: 3, total: 14.97) }
-      let(:order)   { stub(:order, email: 'wayne@gretzky.com', bill_address: address, line_items: [line1, line2]) }
+      let(:order) { stub(:order, email: 'wayne@gretzky.com', line_items: [line1, line2]) }
 
       before do
         SpreeLocalTax::Avalara::InvoiceBuilder.should_receive(:new).and_return(builder)
@@ -35,12 +35,29 @@ describe SpreeLocalTax::Avalara do
         builder.should_receive(:customer=).with('wayne@gretzky.com')
         builder.should_receive(:add_line).with('1234', 'foo', 2, 9.98)
         builder.should_receive(:add_line).with('1234', 'foo', 3, 14.97)
-        builder.should_receive(:add_destination).with('Wayne', 'Gretzky', '123 Main St', '#101', "Toronto", "ON", "CA", "H1H1H1")
       end
 
       subject { SpreeLocalTax::Avalara.generate(order) }
 
-      specify { should == :invoice }
+      context "use shipping address" do
+        before do
+          Spree::Config.tax_using_ship_address = true
+          order.stub(ship_address: address)
+          builder.should_receive(:add_destination).with('Wayne', 'Gretzky', '123 Main St', '#101', "Toronto", "ON", "CA", "H1H1H1")
+        end
+
+        specify { should == :invoice }
+      end
+
+      context "use billing address" do
+        before do
+          Spree::Config.tax_using_ship_address = false
+          order.stub(bill_address: address)
+          builder.should_receive(:add_destination).with('Wayne', 'Gretzky', '123 Main St', '#101', "Toronto", "ON", "CA", "H1H1H1")
+        end
+
+        specify { should == :invoice }
+      end
     end
   end
 

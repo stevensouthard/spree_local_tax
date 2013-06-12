@@ -2,7 +2,7 @@ module SpreeLocalTax::Avalara
   extend self
 
   def generate(order)
-    address = order.bill_address
+    address = Spree::Config.tax_using_ship_address ? order.ship_address : order.bill_address
     builder = InvoiceBuilder.new
 
     builder.customer = order.email if order.email.present?
