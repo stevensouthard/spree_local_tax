@@ -46,7 +46,7 @@ describe SpreeLocalTax::Avalara do
         before do
           Spree::Config.tax_using_ship_address = true
           order.stub(ship_address: address)
-          builder.should_receive(:add_destination).with('Wayne', 'Gretzky', '123 Main St', '#101', "Toronto", "ON", "CA", "H1H1H1")
+          builder.should_receive(:add_destination).with('123 Main St', '#101', "Toronto", "ON", "CA", "H1H1H1")
         end
 
         specify { should == :invoice }
@@ -56,7 +56,7 @@ describe SpreeLocalTax::Avalara do
         before do
           Spree::Config.tax_using_ship_address = false
           order.stub(bill_address: address)
-          builder.should_receive(:add_destination).with('Wayne', 'Gretzky', '123 Main St', '#101', "Toronto", "ON", "CA", "H1H1H1")
+          builder.should_receive(:add_destination).with('123 Main St', '#101', "Toronto", "ON", "CA", "H1H1H1")
         end
 
         specify { should == :invoice }
