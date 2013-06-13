@@ -7,10 +7,23 @@ describe Spree::Calculator::AvalaraTax do
 
   before do
     SpreeLocalTax::Avalara.should_receive(:generate).with(order).and_return(invoice)
-    SpreeLocalTax::Avalara.should_receive(:compute).with(invoice).and_return(9.984)
   end
 
   context "#compute" do
-    specify { calculator.compute(order).should == 9.98 }
+    context "without errors" do
+      before do
+        SpreeLocalTax::Avalara.should_receive(:compute).with(invoice).and_return(9.984)
+      end
+
+      specify { calculator.compute(order).should == 9.98 }
+    end
+    context "with errors" do
+      before do
+        calculator.stub(compute_order: 1.05)
+        SpreeLocalTax::Avalara.should_receive(:compute).with(invoice).and_raise('invalid address')
+      end
+
+      specify { calculator.compute(order).should == 1.05 }
+    end
   end
 end

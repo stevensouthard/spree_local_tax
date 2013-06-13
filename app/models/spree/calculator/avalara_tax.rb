@@ -11,6 +11,8 @@ module Spree
       amount  = avalara.compute(invoice)
 
       round_to_two_places(amount)
+    rescue
+      compute_order(order)
     end
 
   private
