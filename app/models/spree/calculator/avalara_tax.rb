@@ -8,8 +8,9 @@ module Spree
 
     def compute(order)
       invoice = avalara.generate(order)
+      amount  = avalara.compute(invoice)
 
-      avalara.compute(invoice)
+      round_to_two_places(amount)
     end
 
   private
