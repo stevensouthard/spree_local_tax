@@ -1,7 +1,7 @@
 module SpreeLocalTax::Avalara
   extend self
 
-  def generate(order)
+  def generate(order, tax_category)
     address = Spree::Config.tax_using_ship_address ? order.ship_address : order.bill_address
     builder = InvoiceBuilder.new
 
@@ -12,7 +12,8 @@ module SpreeLocalTax::Avalara
 
     order.line_items.each do |line|
       variant = line.variant
-      builder.add_line(variant.sku, variant.product.name, line.quantity, line.total)
+      product = variant.product
+      builder.add_line(variant.sku, product.name, line.quantity, line.total) if product.tax_category == tax_category
     end
 
     builder.invoice

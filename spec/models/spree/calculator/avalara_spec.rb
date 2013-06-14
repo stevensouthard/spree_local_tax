@@ -6,7 +6,8 @@ describe Spree::Calculator::AvalaraTax do
   let(:calculator) { Spree::Calculator::AvalaraTax.new }
 
   before do
-    SpreeLocalTax::Avalara.should_receive(:generate).with(order).and_return(invoice)
+    calculator.stub_chain(:rate, :tax_category).and_return(:tax_category)
+    SpreeLocalTax::Avalara.should_receive(:generate).with(order, :tax_category).and_return(invoice)
   end
 
   context "#compute" do
@@ -17,6 +18,7 @@ describe Spree::Calculator::AvalaraTax do
 
       specify { calculator.compute(order).should == 9.98 }
     end
+
     context "with errors" do
       before do
         calculator.stub(compute_order: 1.05)

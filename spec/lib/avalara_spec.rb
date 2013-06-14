@@ -16,14 +16,14 @@ describe SpreeLocalTax::Avalara do
         builder.should_receive(:add_origin)
       end
 
-      subject { SpreeLocalTax::Avalara.generate(order) }
+      subject { SpreeLocalTax::Avalara.generate(order, 'clothing') }
 
       specify { should == :invoice }
     end
 
     context "user" do
       let(:address) { stub(:address, firstname: 'Wayne', lastname: 'Gretzky', address1: '123 Main St', address2: '#101', city: 'Toronto', state: stub(:state, abbr: 'ON'), country: stub(:country, iso: 'CA'), zipcode: 'H1H1H1')}
-      let(:product) { stub(:product, name: 'foo')}
+      let(:product) { stub(:product, name: 'foo', tax_category: 'clothing')}
       let(:variant) { stub(:variant, sku: '1234', product: product)}
       let(:line1)   { stub(:line, variant: variant, quantity: 2, total: 9.98) }
       let(:line2)   { stub(:line, variant: variant, quantity: 3, total: 14.97) }
@@ -40,7 +40,7 @@ describe SpreeLocalTax::Avalara do
         builder.should_receive(:add_origin).with('123 Warehouse Dr', '#1010', "Chicago", "IL", "US", "12345")
       end
 
-      subject { SpreeLocalTax::Avalara.generate(order) }
+      subject { SpreeLocalTax::Avalara.generate(order, 'clothing') }
 
       context "use shipping address" do
         before do
@@ -50,6 +50,19 @@ describe SpreeLocalTax::Avalara do
         end
 
         specify { should == :invoice }
+
+        context "ignores non taxable items" do
+          let(:non_taxable_product) { stub(:product, name: 'milk', tax_category: 'food')}
+          let(:non_taxable_variant) { stub(:variant, sku: 'NOTAX-1234', product: non_taxable_product)}
+          let(:non_taxable_line)    { stub(:line, variant: non_taxable_variant, quantity: 2, total: 9.98) }
+
+          before do
+            order.line_items << non_taxable_line
+            builder.should_not_receive(:add_line).with('NOTAX-1234', 'milk', 2, 9.98)
+          end
+
+          specify { should == :invoice }
+        end
       end
 
       context "use billing address" do

@@ -7,7 +7,7 @@ module Spree
     end
 
     def compute(order)
-      invoice = avalara.generate(order)
+      invoice = avalara.generate(order, rate.tax_category)
       amount  = avalara.compute(invoice)
 
       round_to_two_places(amount)
