@@ -9,6 +9,7 @@ describe SpreeLocalTax::Avalara do
       let(:order)   { stub(:order, email: nil, bill_address: address, line_items: []) }
 
       before do
+        Spree::Config.tax_using_ship_address = false
         SpreeLocalTax::Avalara::InvoiceBuilder.should_receive(:new).and_return(builder)
         builder.should_receive(:invoice).and_return(:invoice)
         builder.should_not_receive(:customer=)
