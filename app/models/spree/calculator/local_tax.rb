@@ -7,6 +7,7 @@ module Spree
     end
 
     def find_local_tax(address)
+      return unless address
       # calculate the tax rate based on order shipping location
       # the rate will be calculated:
       #     1) by querying the spree_local_taxes DB for a zip match
