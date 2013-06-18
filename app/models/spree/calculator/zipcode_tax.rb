@@ -6,7 +6,7 @@ module Spree
     end
 
     def find_local_tax(address)
-      ZipTax.rate(address.zipcode[0,5])
+      ZipTax.rate(address.zipcode[0,5]) if address
     end
 
     private
